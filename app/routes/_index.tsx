@@ -18,32 +18,36 @@ export default function Index() {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        columnGap: "50px",
+        flexDirection: "column",
+        rowGap: 100,
         height: "100vh",
       }}
     >
-      <Link
-        to="/login"
-        style={{
-          backgroundColor: "darkcyan",
-          color: "white",
-          padding: "1rem",
-          borderRadius: "0.5rem",
-        }}
-      >
-        Login
-      </Link>
-      <Link
-        to="/register"
-        style={{
-          backgroundColor: "darkgray",
-          color: "white",
-          padding: "1rem",
-          borderRadius: "0.5rem",
-        }}
-      >
-        Register
-      </Link>
+      <h1 className="text-black font-bold text-9xl">Landing page</h1>
+      <div className="flex items-center justify-center gap-5">
+        <Link
+          to="/login"
+          style={{
+            backgroundColor: "darkcyan",
+            color: "white",
+            padding: "1rem",
+            borderRadius: "0.5rem",
+          }}
+        >
+          Login
+        </Link>
+        <Link
+          to="/register"
+          style={{
+            backgroundColor: "darkgray",
+            color: "white",
+            padding: "1rem",
+            borderRadius: "0.5rem",
+          }}
+        >
+          Register
+        </Link>
+      </div>
     </main>
   );
 }
