@@ -10,8 +10,17 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  password String
+model Account {
+  id     String  @id @default(uuid())
+  email  String  @unique
+
+  Password Password?
+}
+
+model Password {
+  id        String  @id @default(uuid())
+  salt      String
+  hash      String
+  Account   Account @relation(fields: [accountId], references: [id])
+  accountId String  @unique
 }
