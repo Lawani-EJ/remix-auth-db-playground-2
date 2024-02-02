@@ -16,7 +16,7 @@ import {
   type LoaderFunctionArgs,
 } from "@vercel/remix";
 import stylesheet from "~/tailwind.css";
-import { requireAuthCookie } from "./auth/auth";
+import { getAuthFromRequest } from "./auth/auth";
 
 export const links: LinksFunction = () => [
   ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
@@ -24,7 +24,7 @@ export const links: LinksFunction = () => [
 ];
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const userId = await requireAuthCookie(request);
+  const userId = await getAuthFromRequest(request);
 
   return json({
     isAuthenticated: Boolean(userId),
@@ -61,12 +61,12 @@ export default function App() {
                 Home
               </Link>
 
-              <Link to="/sign-in" className="text-white">
-                Sign In
+              <Link to="/login" className="text-white">
+                Login
               </Link>
 
-              <Link to="/sign-up" className="text-white">
-                Sign Up
+              <Link to="/register" className="text-white">
+                Register
               </Link>
             </>
           )}

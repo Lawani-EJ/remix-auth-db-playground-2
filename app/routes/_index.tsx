@@ -23,7 +23,7 @@ export default function Index() {
       }}
     >
       <Link
-        to="/sign-in"
+        to="/login"
         style={{
           backgroundColor: "darkcyan",
           color: "white",
@@ -31,10 +31,10 @@ export default function Index() {
           borderRadius: "0.5rem",
         }}
       >
-        Sign In
+        Login
       </Link>
       <Link
-        to="/sign-up"
+        to="/register"
         style={{
           backgroundColor: "darkgray",
           color: "white",
@@ -42,7 +42,7 @@ export default function Index() {
           borderRadius: "0.5rem",
         }}
       >
-        Sign Up
+        Register
       </Link>
     </main>
   );
