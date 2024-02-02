@@ -1,5 +1,8 @@
 import { Link } from "@remix-run/react";
 import type { MetaFunction } from "@vercel/remix";
+import { redirectIfLoggedInLoader } from "~/auth/auth";
+
+export const loader = redirectIfLoggedInLoader;
 
 export const meta: MetaFunction = () => {
   return [

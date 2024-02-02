@@ -1,3 +1,7 @@
+import { redirectIfLoggedInLoader } from "~/auth/auth";
+
+export const loader = redirectIfLoggedInLoader;
+
 export default function SignIn() {
   return (
     <main
