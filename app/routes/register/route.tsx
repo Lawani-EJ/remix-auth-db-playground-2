@@ -10,7 +10,7 @@ import { createAccount } from "./queries";
 
 export const loader = redirectIfLoggedInLoader;
 
-export default function SignUp() {
+export default function Register() {
   const lastResult = useActionData<typeof action>();
 
   const [form, fields] = useForm({
@@ -94,7 +94,7 @@ export default function SignUp() {
                 borderRadius: "0.5rem",
               }}
             >
-              Sign Up
+              Register
             </button>
           </div>
         </Form>

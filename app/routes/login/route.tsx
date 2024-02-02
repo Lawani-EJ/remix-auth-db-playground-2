@@ -2,7 +2,7 @@ import { redirectIfLoggedInLoader } from "~/auth/auth";
 
 export const loader = redirectIfLoggedInLoader;
 
-export default function SignIn() {
+export default function Login() {
   return (
     <main
       style={{
@@ -55,7 +55,7 @@ export default function SignIn() {
                 borderRadius: "0.5rem",
               }}
             >
-              Sign In
+              Login
             </button>
           </div>
         </form>
