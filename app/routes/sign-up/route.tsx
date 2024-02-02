@@ -3,8 +3,12 @@ import { getFormProps, getInputProps, useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
 import { json } from "@remix-run/node";
 import { Form, useActionData } from "@remix-run/react";
-import type { ActionFunctionArgs } from "@vercel/remix";
+import { redirect, type ActionFunctionArgs } from "@vercel/remix";
 import { z } from "zod";
+import { redirectIfLoggedInLoader, setAuthOnResponse } from "~/auth/auth";
+import { createAccount } from "./queries";
+
+export const loader = redirectIfLoggedInLoader;
 
 export default function SignUp() {
   const lastResult = useActionData<typeof action>();
@@ -120,5 +124,8 @@ export async function action({ request }: ActionFunctionArgs) {
     return json(submission.reply());
   }
 
-  return json({ success: true });
+  const { email, password } = submission.value;
+
+  let user = await createAccount(email, password);
+  return setAuthOnResponse(redirect("/board"), user.id);
 }
