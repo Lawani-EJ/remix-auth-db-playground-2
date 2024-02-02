@@ -64,7 +64,7 @@ export async function redirectIfLoggedInLoader({
   let userId = await getAuthFromRequest(request);
 
   if (userId) {
-    throw redirect("/home");
+    throw redirect("/board");
   }
   return null;
 }

@@ -1,6 +1,5 @@
 import { cssBundleHref } from "@remix-run/css-bundle";
 import {
-  Form,
   Link,
   Links,
   LiveReload,
@@ -50,11 +49,11 @@ export default function App() {
               <Link to="/board" className="text-white">
                 Board
               </Link>
-              <Form method="post" action="/logout">
+              <form method="post" action="/logout">
                 <button className="block text-center">
                   <span className="text-white">Logout</span>
                 </button>
-              </Form>
+              </form>
             </>
           ) : (
             <>
