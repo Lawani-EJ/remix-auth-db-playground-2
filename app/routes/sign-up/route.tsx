@@ -12,15 +12,15 @@ export default function SignUp() {
         <form>
           <div style={{ marginBottom: "1rem" }}>
             <label
-              htmlFor="username"
+              htmlFor="email"
               style={{ display: "block", marginBottom: "0.5rem" }}
             >
-              Username
+              Email
             </label>
             <input
-              id="username"
-              type="text"
-              placeholder="Username"
+              id="email"
+              type="email"
+              placeholder="Email"
               style={{ display: "block", width: "100%" }}
             />
           </div>
@@ -38,6 +38,22 @@ export default function SignUp() {
               style={{ display: "block", width: "100%" }}
             />
           </div>
+
+          <div style={{ marginBottom: "1rem" }}>
+            <label
+              htmlFor="confirm-password"
+              style={{ display: "block", marginBottom: "0.5rem" }}
+            >
+              Confirm Password
+            </label>
+            <input
+              id="confirm-password"
+              type="password"
+              placeholder="Confirm Password"
+              style={{ display: "block", width: "100%" }}
+            />
+          </div>
+
           <div
             style={{ display: "flex", justifyContent: "center", gap: "1rem" }}
           >
