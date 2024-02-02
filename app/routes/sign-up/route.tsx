@@ -1,4 +1,22 @@
+import type { SubmissionResult } from "@conform-to/react";
+import { getFormProps, getInputProps, useForm } from "@conform-to/react";
+import { parseWithZod } from "@conform-to/zod";
+import { json } from "@remix-run/node";
+import { Form, useActionData } from "@remix-run/react";
+import type { ActionFunctionArgs } from "@vercel/remix";
+import { z } from "zod";
+
 export default function SignUp() {
+  const lastResult = useActionData<typeof action>();
+
+  const [form, fields] = useForm({
+    lastResult: lastResult as SubmissionResult<string[]> | null | undefined,
+    onValidate({ formData }) {
+      return parseWithZod(formData, { schema });
+    },
+    shouldValidate: "onSubmit",
+  });
+
   return (
     <main
       style={{
@@ -9,51 +27,57 @@ export default function SignUp() {
       }}
     >
       <div style={{ width: "100%", maxWidth: "20rem" }}>
-        <form>
+        <Form method="post" {...getFormProps(form)}>
           <div style={{ marginBottom: "1rem" }}>
             <label
-              htmlFor="email"
+              htmlFor={fields.email.id}
               style={{ display: "block", marginBottom: "0.5rem" }}
             >
               Email
             </label>
             <input
-              id="email"
-              type="email"
+              {...getInputProps(fields.email, { type: "email" })}
               placeholder="Email"
               style={{ display: "block", width: "100%" }}
             />
+            {!fields.email.valid && (
+              <div style={{ color: "red" }}>{fields.email.errors}</div>
+            )}
           </div>
           <div style={{ marginBottom: "1rem" }}>
             <label
-              htmlFor="password"
+              htmlFor={fields.password.id}
               style={{ display: "block", marginBottom: "0.5rem" }}
             >
               Password
             </label>
             <input
-              id="password"
-              type="password"
+              {...getInputProps(fields.password, { type: "password" })}
               placeholder="Password"
               style={{ display: "block", width: "100%" }}
             />
+            {!fields.password.valid && (
+              <div style={{ color: "red" }}>{fields.password.errors}</div>
+            )}
           </div>
-
           <div style={{ marginBottom: "1rem" }}>
             <label
-              htmlFor="confirm-password"
+              htmlFor={fields.confirmPassword.id}
               style={{ display: "block", marginBottom: "0.5rem" }}
             >
               Confirm Password
             </label>
             <input
-              id="confirm-password"
-              type="password"
+              {...getInputProps(fields.confirmPassword, { type: "password" })}
               placeholder="Confirm Password"
               style={{ display: "block", width: "100%" }}
             />
+            {!fields.confirmPassword.valid && (
+              <div style={{ color: "red" }}>
+                {fields.confirmPassword.errors}
+              </div>
+            )}
           </div>
-
           <div
             style={{ display: "flex", justifyContent: "center", gap: "1rem" }}
           >
@@ -69,8 +93,32 @@ export default function SignUp() {
               Sign Up
             </button>
           </div>
-        </form>
+        </Form>
       </div>
     </main>
   );
+}
+
+const schema = z
+  .object({
+    email: z.string().email({ message: "Invalid email address" }),
+    password: z
+      .string()
+      .min(6, { message: "Password must be at least 6 characters" }),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords must match",
+    path: ["confirmPassword"],
+  });
+
+export async function action({ request }: ActionFunctionArgs) {
+  const formData = await request.formData();
+  const submission = parseWithZod(formData, { schema });
+
+  if (submission.status !== "success") {
+    return json(submission.reply());
+  }
+
+  return json({ success: true });
 }
