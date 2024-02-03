@@ -8,7 +8,7 @@ async function cleanUp() {
     where: {
       email: {
         contains: "test_",
-        endsWith: "@example.com", // Additional safeguard
+        endsWith: "@example.com",
       },
     },
   });
@@ -16,4 +16,10 @@ async function cleanUp() {
   await prisma.$disconnect();
 }
 
-cleanUp();
+cleanUp()
+  .then(() => {
+    console.log("Database cleaned up");
+  })
+  .catch((e) => {
+    console.error(e);
+  });

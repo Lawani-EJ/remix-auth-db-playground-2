@@ -11,9 +11,8 @@ datasource db {
 }
 
 model Account {
-  id     String  @id @default(uuid())
-  email  String  @unique
-
+  id       String    @id @default(uuid())
+  email    String    @unique
   Password Password?
 }
 
@@ -21,6 +20,6 @@ model Password {
   id        String  @id @default(uuid())
   salt      String
   hash      String
-  Account   Account @relation(fields: [accountId], references: [id])
+  Account   Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
   accountId String  @unique
 }
