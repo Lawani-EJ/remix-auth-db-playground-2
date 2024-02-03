@@ -15,14 +15,27 @@ test("Register validation", async ({ page }) => {
 
   await page.waitForURL("/register");
 
-  const user = createRandomUser();
+  const user1 = createRandomUser();
 
-  await page.getByLabel("Email").fill(user.email);
-  await page.getByLabel("Password", { exact: true }).fill(user.password);
-  await page.getByLabel("Confirm Password").fill(user.password);
+  await page.getByLabel("Email").fill(user1.email);
+  await page.getByLabel("Password", { exact: true }).fill(user1.password);
+  await page.getByLabel("Confirm Password").fill(user1.password);
 
   await page.getByRole("button", { name: "Register" }).click();
 
   await page.waitForURL("/board");
   await page.getByRole("heading", { name: "Board" }).isVisible();
+
+  await page.getByRole("button", { name: "Logout" }).click();
+  await page.waitForURL("/");
+
+  await page.getByRole("link", { name: "Register" }).click();
+
+  await page.waitForURL("/register");
+
+  await page.getByLabel("Email").fill(user1.email);
+  await page.getByLabel("Password", { exact: true }).fill(user1.password);
+  await page.getByLabel("Confirm Password").fill(user1.password);
+
+  await page.getByText("Email already in use").isVisible();
 });
