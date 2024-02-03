@@ -1,5 +1,5 @@
 import type { LoaderFunctionArgs } from "@vercel/remix";
-import { requireAuthCookie } from "~/auth/auth";
+import { requireAuthCookie } from "~/auth";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   await requireAuthCookie(request);

@@ -1,11 +1,10 @@
 import type { SubmissionResult } from "@conform-to/react";
 import { getFormProps, getInputProps, useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
-import { json } from "@remix-run/node";
 import { Form, useActionData, useNavigation } from "@remix-run/react";
 import { redirect, type ActionFunctionArgs } from "@vercel/remix";
 import { z } from "zod";
-import { redirectIfLoggedInLoader, setAuthOnResponse } from "~/auth/auth";
+import { redirectIfLoggedInLoader, setAuthOnResponse } from "~/auth";
 import { createAccount } from "./queries";
 import { FORM_INTENTS, INTENT } from "~/constants";
 import { checkUserExists } from "./validate";
@@ -138,7 +137,7 @@ export async function action({ request }: ActionFunctionArgs) {
   const submission = parseWithZod(formData, { schema });
 
   if (submission.status !== "success") {
-    return json(submission.reply());
+    return submission.reply();
   }
 
   const { email, password } = submission.value;
