@@ -16,7 +16,7 @@ import {
   type LoaderFunctionArgs,
 } from "@vercel/remix";
 import stylesheet from "~/tailwind.css";
-import { getAuthFromRequest } from "./auth/auth";
+import { getAuthFromRequest } from "./auth";
 
 export const links: LinksFunction = () => [
   ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
