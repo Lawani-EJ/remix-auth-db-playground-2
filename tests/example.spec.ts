@@ -8,7 +8,7 @@ export function createRandomUser() {
   };
 }
 
-test("Register validation", async ({ page }) => {
+test("Register and Login", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("heading", { name: "Landing page" });
   await page.getByRole("link", { name: "Register" }).click();
@@ -45,4 +45,23 @@ test("Register validation", async ({ page }) => {
 
   await page.getByRole("button", { name: "Register" }).click();
   await page.waitForURL("/board");
+
+  await page.getByRole("button", { name: "Logout" }).click();
+  await page.waitForURL("/");
+
+  await page.getByRole("link", { name: "Login" }).click();
+  await page.waitForURL("/login");
+
+  await page.getByLabel("Email").fill(user1.email);
+  await page.getByLabel("Password", { exact: true }).fill(user2.password);
+  await page.getByRole("button", { name: "Login" }).click();
+  await page.getByText("Invalid email or password").isVisible();
+
+  await page.getByLabel("Password", { exact: true }).clear();
+  await page.getByLabel("Password", { exact: true }).fill(user1.password);
+
+  await page.getByRole("button", { name: "Login" }).click();
+
+  await page.waitForURL("/board");
+  await page.getByRole("heading", { name: "Board" }).isVisible();
 });
