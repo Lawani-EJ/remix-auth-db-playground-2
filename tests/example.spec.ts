@@ -1,9 +1,10 @@
 import { test } from "@playwright/test";
 import { faker } from "@faker-js/faker";
 
-export function createRandomUser() {
+function createRandomUser() {
+  const username = faker.internet.userName();
   return {
-    email: faker.internet.email(),
+    email: `test_${username}@example.com`,
     password: faker.internet.password(),
   };
 }
