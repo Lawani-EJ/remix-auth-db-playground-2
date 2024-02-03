@@ -8,6 +8,7 @@ import { z } from "zod";
 import { redirectIfLoggedInLoader, setAuthOnResponse } from "~/auth/auth";
 import { createAccount } from "./queries";
 import { FORM_INTENTS, INTENT } from "~/constants";
+import { checkUserExists } from "./validate";
 
 export const loader = redirectIfLoggedInLoader;
 
@@ -25,6 +26,11 @@ export default function Register() {
 
   const isSubmitting =
     navigation.formData?.get(INTENT) === FORM_INTENTS.register;
+
+  console.log({
+    lastResult,
+    fields,
+  });
 
   return (
     <main
@@ -105,7 +111,7 @@ export default function Register() {
                 borderRadius: "0.5rem",
               }}
             >
-              {isSubmitting ? "Submitting..." : "Register"}
+              Register
             </button>
           </div>
         </Form>
@@ -136,6 +142,15 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 
   const { email, password } = submission.value;
+
+  const userExists = await checkUserExists(email);
+  if (userExists) {
+    return submission.reply({
+      fieldErrors: {
+        email: ["Email already in use"],
+      },
+    });
+  }
 
   let user = await createAccount(email, password);
   return setAuthOnResponse(redirect("/board"), user.id);
