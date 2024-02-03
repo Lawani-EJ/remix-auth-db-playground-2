@@ -33,7 +33,7 @@ export default defineConfig({
     headless: false,
     /* Slowing down the test by adding a delay to each action */
     launchOptions: {
-      slowMo: 250, // Adding a 500ms delay to each action to slow down the test
+      slowMo: 150, // Adding a 500ms delay to each action to slow down the test
     },
   },
 
