@@ -2,16 +2,18 @@ import type { SubmissionResult } from "@conform-to/react";
 import { getFormProps, getInputProps, useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
 import { json } from "@remix-run/node";
-import { Form, useActionData } from "@remix-run/react";
+import { Form, useActionData, useNavigation } from "@remix-run/react";
 import { redirect, type ActionFunctionArgs } from "@vercel/remix";
 import { z } from "zod";
 import { redirectIfLoggedInLoader, setAuthOnResponse } from "~/auth/auth";
 import { createAccount } from "./queries";
+import { FORM_INTENTS, INTENT } from "~/constants";
 
 export const loader = redirectIfLoggedInLoader;
 
 export default function Register() {
   const lastResult = useActionData<typeof action>();
+  const navigation = useNavigation();
 
   const [form, fields] = useForm({
     lastResult: lastResult as SubmissionResult<string[]> | null | undefined,
@@ -20,6 +22,9 @@ export default function Register() {
     },
     shouldValidate: "onSubmit",
   });
+
+  const isSubmitting =
+    navigation.formData?.get(INTENT) === FORM_INTENTS.register;
 
   return (
     <main
@@ -48,6 +53,7 @@ export default function Register() {
               <div style={{ color: "red" }}>{fields.email.errors}</div>
             )}
           </div>
+
           <div style={{ marginBottom: "1rem" }}>
             <label
               htmlFor={fields.password.id}
@@ -64,6 +70,7 @@ export default function Register() {
               <div style={{ color: "red" }}>{fields.password.errors}</div>
             )}
           </div>
+
           <div style={{ marginBottom: "1rem" }}>
             <label
               htmlFor={fields.confirmPassword.id}
@@ -82,11 +89,15 @@ export default function Register() {
               </div>
             )}
           </div>
+
           <div
             style={{ display: "flex", justifyContent: "center", gap: "1rem" }}
           >
             <button
               type="submit"
+              name={INTENT}
+              value={FORM_INTENTS.register}
+              disabled={isSubmitting}
               style={{
                 backgroundColor: "darkcyan",
                 color: "white",
@@ -94,7 +105,7 @@ export default function Register() {
                 borderRadius: "0.5rem",
               }}
             >
-              Register
+              {isSubmitting ? "Submitting..." : "Register"}
             </button>
           </div>
         </Form>
