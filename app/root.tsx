@@ -65,7 +65,13 @@ export default function App() {
                 Board
               </Link>
               <form method="post" action="/logout">
-                <button style={{ display: "block", textAlign: "center" }}>
+                <button
+                  style={{
+                    display: "block",
+                    textAlign: "center",
+                    backgroundColor: "black",
+                  }}
+                >
                   <span style={{ color: "white" }}>Logout</span>
                 </button>
               </form>
