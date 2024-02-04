@@ -1,17 +1,9 @@
 import { test } from "@playwright/test";
-import { faker } from "@faker-js/faker";
-
-function createRandomUser() {
-  const username = faker.internet.userName();
-  return {
-    email: `test_${username}@example.com`,
-    password: faker.internet.password(),
-  };
-}
+import { createRandomUser } from "./utils";
 
 test("Register and Login", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("heading", { name: "Landing page" });
+  await page.getByRole("heading", { name: "Landing page" }).isVisible();
   await page.getByRole("link", { name: "Register" }).click();
 
   await page.waitForURL("/register");
