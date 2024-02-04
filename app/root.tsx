@@ -15,12 +15,10 @@ import {
   type LinksFunction,
   type LoaderFunctionArgs,
 } from "@vercel/remix";
-import stylesheet from "~/tailwind.css";
 import { getAuthFromRequest } from "./auth";
 
 export const links: LinksFunction = () => [
   ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
-  { rel: "stylesheet", href: stylesheet },
 ];
 
 export async function loader({ request }: LoaderFunctionArgs) {
