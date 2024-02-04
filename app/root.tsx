@@ -40,30 +40,47 @@ export default function App() {
         <Meta />
         <Links />
       </head>
-      <body className="bg-gray-100 flex-col items-center">
-        <nav className="bg-gray-800 text-white w-full p-4 gap-4 flex items-center">
+      <body
+        style={{
+          backgroundColor: "#f3f4f6",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
+        <nav
+          style={{
+            backgroundColor: "#1f2937",
+            color: "white",
+            width: "100%",
+            padding: "16px",
+            gap: "16px",
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
           {isAuthenticated ? (
             <>
-              <Link to="/board" className="text-white">
+              <Link to="/board" style={{ color: "white" }}>
                 Board
               </Link>
               <form method="post" action="/logout">
-                <button className="block text-center">
-                  <span className="text-white">Logout</span>
+                <button style={{ display: "block", textAlign: "center" }}>
+                  <span style={{ color: "white" }}>Logout</span>
                 </button>
               </form>
             </>
           ) : (
             <>
-              <Link to="/" className="text-white">
+              <Link to="/" style={{ color: "white" }}>
                 Home
               </Link>
 
-              <Link to="/login" className="text-white">
+              <Link to="/login" style={{ color: "white" }}>
                 Login
               </Link>
 
-              <Link to="/register" className="text-white">
+              <Link to="/register" style={{ color: "white" }}>
                 Register
               </Link>
             </>

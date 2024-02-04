@@ -22,7 +22,15 @@ export default function Index() {
         height: "100vh",
       }}
     >
-      <h1 className="text-black font-bold text-9xl">Landing page</h1>
+      <h1
+        style={{
+          color: "black",
+          fontWeight: "bold",
+          fontSize: "9rem",
+        }}
+      >
+        Landing page
+      </h1>
     </main>
   );
 }

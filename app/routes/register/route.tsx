@@ -110,7 +110,7 @@ export default function Register() {
                 borderRadius: "0.5rem",
               }}
             >
-              Register
+              {isSubmitting ? "Submitting..." : "Register"}
             </button>
           </div>
         </Form>
