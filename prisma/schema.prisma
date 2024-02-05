@@ -6,20 +6,38 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql" // Change the provider to "postgresql"
-  url      = env("DATABASE_URL") // The DATABASE_URL should be the connection string to your PostgreSQL database
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model Account {
-  id       String    @id @default(uuid())
-  email    String    @unique
-  Password Password?
+  id          String    @id @default(uuid())
+  email       String    @unique
+  Password    Password?
+  ownedBoards Board[]   @relation("BoardOwner")
+  boards      Board[]   @relation("BoardMembers") // Explicit many-to-many relation field
 }
 
 model Password {
-  id        String  @id @default(uuid())
+  id        String   @id @default(uuid())
   salt      String
   hash      String
-  Account   Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
-  accountId String  @unique
+  Account   Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  accountId String   @unique
+}
+
+model Board {
+  id       String   @id @default(uuid())
+  name     String
+  cards    Card[]
+  members  Account[] @relation("BoardMembers") // Many-to-many relation
+  owner    Account   @relation("BoardOwner", fields: [ownerId], references: [id])
+  ownerId  String
+}
+
+model Card {
+  id      String @id @default(uuid())
+  text    String
+  board   Board  @relation(fields: [boardId], references: [id])
+  boardId String
 }
