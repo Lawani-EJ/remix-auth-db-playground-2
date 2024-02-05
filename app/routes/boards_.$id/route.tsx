@@ -1,8 +1,9 @@
 import { useLoaderData } from "@remix-run/react";
-import type { LoaderFunctionArgs } from "@vercel/remix";
-import { json } from "@vercel/remix";
+import type { LoaderFunctionArgs } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import { Cursor } from "~/components";
 import { RoomProvider, useMyPresence, useOthers } from "~/liveblocks.config";
+import { requireAuthCookie } from "~/auth";
 
 const COLORS = [
   "#E57373",
@@ -15,53 +16,63 @@ const COLORS = [
   "#7986CB",
 ];
 
-export async function loader({ params }: LoaderFunctionArgs) {
+export async function loader({ params, request }: LoaderFunctionArgs) {
+  await requireAuthCookie(request);
+
   return json({
     boardId: params.id,
   });
 }
 
-export default function Board() {
+export default function BoardRoute() {
   const { boardId } = useLoaderData<typeof loader>();
-  const others = useOthers();
-  const [{ cursor }, updateMyPresence] = useMyPresence();
 
   return (
     <RoomProvider
       id={`board-room-${boardId}`}
       initialPresence={{ cursor: null }}
     >
-      <div
-        onPointerMove={(event) => {
-          updateMyPresence({
-            cursor: {
-              x: Math.round(event.clientX),
-              y: Math.round(event.clientY),
-            },
-          });
-        }}
-        onPointerLeave={() =>
-          updateMyPresence({
-            cursor: null,
-          })
-        }
-      >
-        <h1>Board {boardId}</h1>
-        {others.map(({ connectionId, presence }) => {
-          if (presence.cursor === null) {
-            return null;
-          }
-
-          return (
-            <Cursor
-              key={`cursor-${connectionId}`}
-              color={COLORS[connectionId % COLORS.length]}
-              x={presence.cursor.x}
-              y={presence.cursor.y}
-            />
-          );
-        })}
-      </div>
+      <Board />
     </RoomProvider>
+  );
+}
+
+function Board() {
+  const { boardId } = useLoaderData<typeof loader>();
+  const others = useOthers();
+  const [{ cursor }, updateMyPresence] = useMyPresence();
+
+  return (
+    <div
+      onPointerMove={(event) => {
+        updateMyPresence({
+          cursor: {
+            x: Math.round(event.clientX),
+            y: Math.round(event.clientY),
+          },
+        });
+      }}
+      onPointerLeave={() =>
+        updateMyPresence({
+          cursor: null,
+        })
+      }
+    >
+      <h1>Board {boardId}</h1>
+      {others.map(({ connectionId, presence }) => {
+        if (presence.cursor === null) {
+          return null;
+        }
+
+        return (
+          <Cursor
+            key={`cursor-${connectionId}`}
+            color={COLORS[connectionId % COLORS.length]}
+            x={presence.cursor.x}
+            y={presence.cursor.y}
+          />
+        );
+      })}
+    </div>
   );
 }
