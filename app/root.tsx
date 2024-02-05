@@ -61,8 +61,8 @@ export default function App() {
         >
           {isAuthenticated ? (
             <>
-              <Link to="/board" style={{ color: "white" }}>
-                Board
+              <Link to="/boards" style={{ color: "white" }}>
+                Boards
               </Link>
               <form method="post" action="/logout">
                 <button

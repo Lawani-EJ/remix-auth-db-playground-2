@@ -9,7 +9,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 export default function Board() {
   return (
     <div>
-      <h1>Board</h1>
+      <h1>Boards</h1>
     </div>
   );
 }

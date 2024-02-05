@@ -115,6 +115,6 @@ export async function action({ request }: { request: Request }) {
     });
   }
 
-  let response = redirect("/board");
+  let response = redirect("/boards");
   return setAuthOnResponse(response, userId);
 }

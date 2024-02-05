@@ -152,5 +152,5 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 
   let user = await createAccount(email, password);
-  return setAuthOnResponse(redirect("/board"), user.id);
+  return setAuthOnResponse(redirect("/boards"), user.id);
 }
