@@ -16,9 +16,11 @@ import {
   type LoaderFunctionArgs,
 } from "@vercel/remix";
 import { getAuthFromRequest } from "./auth";
+import rootCss from "./root.css";
 
 export const links: LinksFunction = () => [
   ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
+  { rel: "stylesheet", href: rootCss },
 ];
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -46,6 +48,7 @@ export default function App() {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
+          height: "100%",
         }}
       >
         <nav
