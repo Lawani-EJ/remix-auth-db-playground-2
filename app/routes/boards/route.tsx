@@ -6,12 +6,12 @@ import {
   json,
 } from "@vercel/remix";
 import { requireAuthCookie } from "~/auth";
-import { createBoard, getBoards } from "./queries";
+import { createBoard, getBoardsForUserWithId } from "./queries";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const userId = await requireAuthCookie(request);
 
-  const boards = await getBoards(userId);
+  const boards = await getBoardsForUserWithId(userId);
 
   return json({
     boards,
