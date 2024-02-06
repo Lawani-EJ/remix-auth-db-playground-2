@@ -26,9 +26,14 @@ export async function createBoard(userId: string) {
 }
 
 export async function getBoardsForUserWithId(userId: string) {
-  return await prisma.board.findMany({
-    where: {
-      ownerId: userId,
-    },
-  });
+  return await prisma.boardRole
+    .findMany({
+      where: {
+        accountId: userId,
+      },
+      include: {
+        board: true,
+      },
+    })
+    .then((roles) => roles.map((role) => role.board));
 }

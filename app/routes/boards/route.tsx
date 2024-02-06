@@ -7,6 +7,7 @@ import {
 } from "@vercel/remix";
 import { requireAuthCookie } from "~/auth";
 import { createBoard, getBoardsForUserWithId } from "./queries";
+import { FORM_INTENTS, INTENT } from "~/constants";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const userId = await requireAuthCookie(request);
@@ -25,7 +26,9 @@ export default function Board() {
     <div>
       <h1>Boards</h1>
       <Form method="post">
-        <button type="submit">Create a board</button>
+        <button type="submit" name={INTENT} value={FORM_INTENTS.createBoard}>
+          Create a board
+        </button>
       </Form>
 
       <ul>
