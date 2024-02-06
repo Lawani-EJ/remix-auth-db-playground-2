@@ -4,6 +4,7 @@ import { json } from "@remix-run/node";
 import { Cursor } from "~/components";
 import { RoomProvider, useMyPresence, useOthers } from "~/liveblocks.config";
 import { requireAuthCookie } from "~/auth";
+import { invariant } from "@epic-web/invariant";
 
 const COLORS = [
   "#E57373",
@@ -19,6 +20,8 @@ const COLORS = [
 export async function loader({ params, request }: LoaderFunctionArgs) {
   await requireAuthCookie(request);
 
+  invariant(params.id, "No board ID provided");
+
   return json({
     boardId: params.id,
   });
@@ -28,10 +31,7 @@ export default function BoardRoute() {
   const { boardId } = useLoaderData<typeof loader>();
 
   return (
-    <RoomProvider
-      id={`board-room-${boardId}`}
-      initialPresence={{ cursor: null }}
-    >
+    <RoomProvider id={boardId} initialPresence={{ cursor: null }}>
       <Board />
     </RoomProvider>
   );
