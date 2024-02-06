@@ -6,16 +6,16 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
 model Account {
-  id          String    @id @default(uuid())
-  email       String    @unique
+  id          String        @id @default(uuid())
+  email       String        @unique
   Password    Password?
-  ownedBoards Board[]   @relation("BoardOwner")
-  boards      Board[]   @relation("BoardMembers") // Explicit many-to-many relation field
+  ownedBoards Board[]       @relation("BoardOwner")
+  boardRoles  BoardRole[]   // Relation to track user roles on boards
 }
 
 model Password {
@@ -27,12 +27,12 @@ model Password {
 }
 
 model Board {
-  id       String   @id @default(uuid())
+  id       String      @id @default(uuid())
   name     String
   cards    Card[]
-  members  Account[] @relation("BoardMembers") // Many-to-many relation
-  owner    Account   @relation("BoardOwner", fields: [ownerId], references: [id])
+  owner    Account     @relation("BoardOwner", fields: [ownerId], references: [id])
   ownerId  String
+  roles    BoardRole[] // Relation to track user roles on this board
 }
 
 model Card {
@@ -40,4 +40,15 @@ model Card {
   text    String
   board   Board  @relation(fields: [boardId], references: [id])
   boardId String
+}
+
+model BoardRole {
+  id       String   @id @default(uuid())
+  role     String // owner, editor, viewer
+  board    Board    @relation(fields: [boardId], references: [id])
+  boardId  String
+  account  Account  @relation(fields: [accountId], references: [id])
+  accountId String
+
+  @@unique([boardId, accountId]) // Ensure one role per user per board
 }
