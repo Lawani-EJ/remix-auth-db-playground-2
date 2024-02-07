@@ -1,4 +1,4 @@
-import type { LiveList } from "@liveblocks/client";
+import type { LiveList, LiveObject } from "@liveblocks/client";
 import { createClient } from "@liveblocks/client";
 import { createRoomContext } from "@liveblocks/react";
 
@@ -11,10 +11,12 @@ type Presence = {
 };
 
 type Storage = {
-  cards: LiveList<{
-    id: string;
-    text: string;
-  }>;
+  cards: LiveList<
+    LiveObject<{
+      text: string;
+      id: string;
+    }>
+  >;
 };
 
 type UserMeta = {
