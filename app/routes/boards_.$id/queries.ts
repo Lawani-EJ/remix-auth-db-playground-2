@@ -45,6 +45,8 @@ export async function addBoardMember({
     },
   });
 
+  console.log("accountToBeAdded", accountToBeAdded);
+
   if (!accountToBeAdded) {
     return { status: "error", message: "Account with email not found" };
   }
@@ -52,6 +54,7 @@ export async function addBoardMember({
   const existingBoardRole = await prisma.boardRole.findFirst({
     where: {
       accountId: accountToBeAdded.id,
+      boardId,
     },
   });
 

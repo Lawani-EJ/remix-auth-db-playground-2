@@ -2,7 +2,15 @@ import { Form, useActionData, useLoaderData } from "@remix-run/react";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Cursor } from "~/components";
-import { RoomProvider, useMyPresence, useOthers } from "~/liveblocks.config";
+import type { Storage } from "~/liveblocks.config";
+import {
+  RoomProvider,
+  useMyPresence,
+  useOthers,
+  useStorage,
+  useMutation,
+  useSelf,
+} from "~/liveblocks.config";
 import { requireAuthCookie } from "~/auth";
 import { invariant } from "@epic-web/invariant";
 import { z } from "zod";
@@ -16,6 +24,9 @@ import {
   getSelectProps,
   useForm,
 } from "@conform-to/react";
+import { liveblocks } from "~/helpers/liveblocks";
+import type { PlainLsonObject } from "@liveblocks/client";
+import { LiveList, LiveObject, toPlainLson } from "@liveblocks/client";
 
 const COLORS = [
   "#E57373",
@@ -31,18 +42,56 @@ const COLORS = [
 export async function loader({ params, request }: LoaderFunctionArgs) {
   await requireAuthCookie(request);
 
-  invariant(params.id, "No board ID provided");
+  const boardId = params.id;
+
+  invariant(boardId, "No board ID provided");
+
+  try {
+    await liveblocks.getRoom(boardId);
+  } catch (error) {
+    await liveblocks.createRoom(boardId, {
+      defaultAccesses: ["room:write"],
+    });
+  }
+
+  let storage = await liveblocks.getStorageDocument(boardId, "json");
+
+  const isStorageEmpty = Object.keys(storage).length === 0;
+  if (isStorageEmpty) {
+    const initialStorage: LiveObject<Storage> = new LiveObject({
+      cards: new LiveList([]),
+    });
+
+    const initialStoragePlain: PlainLsonObject = toPlainLson(
+      initialStorage
+    ) as PlainLsonObject;
+
+    storage = await liveblocks.initializeStorageDocument(
+      boardId,
+      initialStoragePlain
+    );
+  }
+
+  console.log("storage", storage);
 
   return json({
-    boardId: params.id,
+    boardId,
+    cards: storage.cards as unknown as LiveList<
+      LiveObject<{ id: string; text: string }>
+    >,
   });
 }
 
 export default function BoardRoute() {
-  const { boardId } = useLoaderData<typeof loader>();
-
+  const { boardId, cards } = useLoaderData<typeof loader>();
   return (
-    <RoomProvider id={boardId} initialPresence={{ cursor: null }}>
+    <RoomProvider
+      id={boardId}
+      initialPresence={{ cursor: null }}
+      initialStorage={{
+        cards: cards as LiveList<LiveObject<{ id: string; text: string }>>,
+      }}
+    >
       <Board />
     </RoomProvider>
   );
@@ -51,11 +100,12 @@ export default function BoardRoute() {
 function Board() {
   const { boardId } = useLoaderData<typeof loader>();
   const others = useOthers();
+  const self = useSelf();
   const [{ cursor }, updateMyPresence] = useMyPresence();
 
   const lastResult = useActionData<typeof action>();
 
-  const [form, fields] = useForm({
+  const [personForm, personFields] = useForm({
     lastResult: lastResult as SubmissionResult<string[]> | null | undefined,
     onValidate({ formData }) {
       return parseWithZod(formData, { schema: ActionSchema });
@@ -63,10 +113,34 @@ function Board() {
     shouldValidate: "onSubmit",
   });
 
+  // Get the LiveList of cards from the storage
+  const cards = useStorage((root) => root.cards);
+
+  const addCard = useMutation(({ storage }) => {
+    storage.get("cards").push(
+      new LiveObject({
+        id: crypto.randomUUID(),
+        text: "New card",
+      })
+    );
+  }, []);
+
+  const updateCardText = useMutation(
+    ({ storage }, cardId: string, newText: string) => {
+      const cards = storage.get("cards");
+
+      const cardIndex = cards.findIndex((card) => card.get("id") === cardId);
+
+      if (cardIndex !== -1) {
+        cards.set(cardIndex, new LiveObject({ id: cardId, text: newText }));
+      }
+    },
+    []
+  );
+
   return (
     <main
       onPointerMove={(event) => {
-        console.log("pointer move", event.clientX, event.clientY);
         updateMyPresence({
           cursor: {
             x: Math.round(event.clientX),
@@ -84,30 +158,58 @@ function Board() {
         height: "100%",
       }}
     >
-      <h1>Board {boardId}</h1>
-
-      <Form
-        method="post"
-        {...getFormProps(form)}
-        style={{ display: "flex", flexDirection: "column", rowGap: 20 }}
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          rowGap: 200,
+        }}
       >
+        <h1>Board {boardId}</h1>
+
         <div>
-          <label htmlFor={fields.role.id}>Select Role:</label>
-          <select {...getSelectProps(fields.role)}>
-            <option value="editor">Editor</option>
-            <option value="viewer">Viewer</option>
-          </select>
-        </div>
-        <div>
-          <label htmlFor={fields.email.id}>Email:</label>
-          <input {...getInputProps(fields.email, { type: "email" })} />
-          {!fields.email.valid && (
-            <div style={{ color: "red" }}>{fields.email.errors}</div>
-          )}
+          <ul>
+            {cards?.map((card) => (
+              <textarea
+                key={card.id}
+                value={card.text}
+                disabled={!self?.canWrite}
+                onChange={(event) =>
+                  updateCardText(card.id, event.target.value)
+                }
+              />
+            ))}
+          </ul>
+
+          <button type="button" onClick={addCard}>
+            Create Card
+          </button>
         </div>
 
-        <button type="submit">Add person</button>
-      </Form>
+        <Form
+          method="post"
+          {...getFormProps(personForm)}
+          style={{ display: "flex", flexDirection: "column", rowGap: 20 }}
+        >
+          <div>
+            <label htmlFor={personFields.role.id}>Select Role:</label>
+            <select {...getSelectProps(personFields.role)}>
+              <option value="editor">Editor</option>
+              <option value="viewer">Viewer</option>
+            </select>
+          </div>
+          <div>
+            <label htmlFor={personFields.email.id}>Email:</label>
+            <input {...getInputProps(personFields.email, { type: "email" })} />
+            {!personFields.email.valid && (
+              <div style={{ color: "red" }}>{personFields.email.errors}</div>
+            )}
+          </div>
+
+          <button type="submit">Add person</button>
+        </Form>
+      </div>
 
       {others.map(({ connectionId, presence }) => {
         if (presence.cursor === null) {
