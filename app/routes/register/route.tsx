@@ -6,7 +6,7 @@ import { redirect, type ActionFunctionArgs } from "@vercel/remix";
 import { z } from "zod";
 import { redirectIfLoggedInLoader, setAuthOnResponse } from "~/auth";
 import { createAccount } from "./queries";
-import { FORM_INTENTS, INTENT } from "~/constants";
+import { FORM_INTENTS, INTENT } from "~/helpers/constants";
 import { checkUserExists } from "./validate";
 
 export const loader = redirectIfLoggedInLoader;

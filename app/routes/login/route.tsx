@@ -4,7 +4,7 @@ import { parseWithZod } from "@conform-to/zod";
 import { Form, useActionData, useNavigation } from "@remix-run/react";
 import { z } from "zod";
 import { redirectIfLoggedInLoader, setAuthOnResponse } from "~/auth";
-import { FORM_INTENTS, INTENT } from "~/constants";
+import { FORM_INTENTS, INTENT } from "~/helpers/constants";
 import { login } from "./queries";
 import { redirect } from "@vercel/remix";
 
