@@ -75,9 +75,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 
   return json({
     boardId,
-    cards: storage.cards as unknown as LiveList<
-      LiveObject<{ id: string; text: string }>
-    >,
+    cards: storage.cards as unknown as Storage["cards"],
   });
 }
 
@@ -88,7 +86,7 @@ export default function BoardRoute() {
       id={boardId}
       initialPresence={{ cursor: null }}
       initialStorage={{
-        cards: cards as LiveList<LiveObject<{ id: string; text: string }>>,
+        cards: cards as Storage["cards"],
       }}
     >
       <Board />
