@@ -2,7 +2,6 @@ import { Form, useActionData, useLoaderData } from "@remix-run/react";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Cursor } from "~/components";
-import type { Storage } from "~/liveblocks.config";
 import {
   RoomProvider,
   useMyPresence,
@@ -23,9 +22,8 @@ import {
   getSelectProps,
   useForm,
 } from "@conform-to/react";
-import { liveblocks } from "~/helpers/liveblocks";
-import type { PlainLsonObject } from "@liveblocks/client";
-import { LiveList, LiveObject, toPlainLson } from "@liveblocks/client";
+import { LiveList, LiveObject } from "@liveblocks/client";
+import { ClientSideSuspense } from "@liveblocks/react";
 
 const COLORS = [
   "#E57373",
@@ -45,51 +43,24 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 
   invariant(boardId, "No board ID provided");
 
-  // make sure room exists
-  try {
-    await liveblocks.getRoom(boardId);
-  } catch (error) {
-    await liveblocks.createRoom(boardId, {
-      defaultAccesses: ["room:write"],
-    });
-  }
-
-  // setup storage
-  let storage = await liveblocks.getStorageDocument(boardId, "json");
-
-  const isStorageEmpty = Object.keys(storage).length === 0;
-  if (isStorageEmpty) {
-    const initialStorage: LiveObject<Storage> = new LiveObject({
-      cards: new LiveList([]),
-    });
-
-    const initialStoragePlain: PlainLsonObject = toPlainLson(
-      initialStorage
-    ) as PlainLsonObject;
-
-    storage = await liveblocks.initializeStorageDocument(
-      boardId,
-      initialStoragePlain
-    );
-  }
-
   return json({
     boardId,
-    cards: storage.cards as unknown as Storage["cards"],
   });
 }
 
 export default function BoardRoute() {
-  const { boardId, cards } = useLoaderData<typeof loader>();
+  const { boardId } = useLoaderData<typeof loader>();
   return (
     <RoomProvider
       id={boardId}
       initialPresence={{ cursor: null }}
       initialStorage={{
-        cards: cards as Storage["cards"],
+        cards: new LiveList(),
       }}
     >
-      <Board />
+      <ClientSideSuspense fallback={<div>Loading...</div>}>
+        {() => <Board />}
+      </ClientSideSuspense>
     </RoomProvider>
   );
 }

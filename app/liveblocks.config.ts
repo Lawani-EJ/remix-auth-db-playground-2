@@ -27,10 +27,13 @@ type UserMeta = {
 };
 
 export const {
-  RoomProvider,
-  useOthers,
-  useSelf,
-  useMyPresence,
-  useStorage,
-  useMutation,
+  suspense: {
+    RoomProvider,
+    useOthers,
+    useSelf,
+    useMyPresence,
+    useStorage,
+    useMutation,
+    useStatus,
+  },
 } = createRoomContext<Presence, Storage, UserMeta>(client);
