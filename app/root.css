@@ -19,10 +19,11 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: var(--colors-beige);
+  background-color: cadetblue;
 }
 
 input:disabled,
-button:disabled {
+button:disabled,
+textarea:disabled {
   opacity: 0.5;
 }

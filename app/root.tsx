@@ -42,15 +42,7 @@ export default function App() {
         <Meta />
         <Links />
       </head>
-      <body
-        style={{
-          backgroundColor: "#f3f4f6",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          height: "100%",
-        }}
-      >
+      <body>
         <nav
           style={{
             backgroundColor: "#1f2937",
