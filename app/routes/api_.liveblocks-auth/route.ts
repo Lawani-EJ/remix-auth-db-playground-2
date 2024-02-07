@@ -16,7 +16,11 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
   invariant(user, "User not found");
 
-  const session = liveblocks.prepareSession(user.id);
+  const session = liveblocks.prepareSession(user.id, {
+    userInfo: {
+      email: user.email,
+    },
+  });
 
   const { room } = await request.json();
 
@@ -31,8 +35,14 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   }
 
   // Authorize the user and return the result
-  const { status, body } = await session.authorize();
-  return new Response(body, { status });
+  const result = await session.authorize();
+
+  if (result.error) {
+    console.error("Liveblocks authentication failed:", result.error);
+    return new Response(undefined, { status: 403 });
+  }
+
+  return new Response(result.body, { status: result.status });
 };
 
 async function getUserFromDB(userId: string) {
