@@ -10,7 +10,7 @@ type Presence = {
   cursor: { x: number; y: number } | null;
 };
 
-type Storage = {
+export type Storage = {
   cards: LiveList<
     LiveObject<{
       text: string;
@@ -26,5 +26,11 @@ type UserMeta = {
   };
 };
 
-export const { RoomProvider, useOthers, useSelf, useMyPresence } =
-  createRoomContext<Presence, Storage, UserMeta>(client);
+export const {
+  RoomProvider,
+  useOthers,
+  useSelf,
+  useMyPresence,
+  useStorage,
+  useMutation,
+} = createRoomContext<Presence, Storage, UserMeta>(client);

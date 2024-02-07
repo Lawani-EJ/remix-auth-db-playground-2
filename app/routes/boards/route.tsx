@@ -7,7 +7,7 @@ import {
 } from "@vercel/remix";
 import { requireAuthCookie } from "~/auth";
 import { createBoard, getBoardsForUserWithId } from "./queries";
-import { FORM_INTENTS, INTENT } from "~/constants";
+import { FORM_INTENTS, INTENT } from "~/helpers/constants";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const userId = await requireAuthCookie(request);

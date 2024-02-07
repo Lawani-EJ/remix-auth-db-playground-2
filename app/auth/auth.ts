@@ -1,7 +1,8 @@
 import type { LoaderFunctionArgs } from "@vercel/remix";
 import { createCookie, redirect } from "@vercel/remix";
+import { env } from "~/helpers/env";
 
-let secret = process.env.COOKIE_SECRET || "default";
+let secret = env.COOKIE_SECRET || "default";
 if (secret === "default") {
   console.warn(
     "🚨 No COOKIE_SECRET environment variable set, using default. The app is insecure in production."
@@ -14,7 +15,7 @@ let authCookie = createCookie("auth", {
   // 30 days
   maxAge: 30 * 24 * 60 * 60,
   httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
+  secure: env.NODE_ENV === "production",
   sameSite: "lax",
 });
 
