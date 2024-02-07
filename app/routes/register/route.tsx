@@ -1,4 +1,3 @@
-import type { SubmissionResult } from "@conform-to/react";
 import { getFormProps, getInputProps, useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
 import { Form, useActionData, useNavigation } from "@remix-run/react";
@@ -16,7 +15,7 @@ export default function Register() {
   const navigation = useNavigation();
 
   const [form, fields] = useForm({
-    lastResult: lastResult as SubmissionResult<string[]> | null | undefined,
+    lastResult: lastResult,
     onValidate({ formData }) {
       return parseWithZod(formData, { schema });
     },

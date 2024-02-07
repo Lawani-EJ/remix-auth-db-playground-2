@@ -17,7 +17,6 @@ import { z } from "zod";
 import type { ActionFunctionArgs } from "@vercel/remix";
 import { parseWithZod } from "@conform-to/zod";
 import { addBoardMember, isUserBoardEditor } from "./queries";
-import type { SubmissionResult } from "@conform-to/react";
 import {
   getFormProps,
   getInputProps,
@@ -46,6 +45,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 
   invariant(boardId, "No board ID provided");
 
+  // make sure room exists
   try {
     await liveblocks.getRoom(boardId);
   } catch (error) {
@@ -54,6 +54,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
     });
   }
 
+  // setup storage
   let storage = await liveblocks.getStorageDocument(boardId, "json");
 
   const isStorageEmpty = Object.keys(storage).length === 0;
@@ -71,8 +72,6 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
       initialStoragePlain
     );
   }
-
-  console.log("storage", storage);
 
   return json({
     boardId,
@@ -106,7 +105,7 @@ function Board() {
   const lastResult = useActionData<typeof action>();
 
   const [personForm, personFields] = useForm({
-    lastResult: lastResult as SubmissionResult<string[]> | null | undefined,
+    lastResult,
     onValidate({ formData }) {
       return parseWithZod(formData, { schema: ActionSchema });
     },
@@ -272,5 +271,5 @@ export async function action({ request, params }: ActionFunctionArgs) {
     });
   }
 
-  return json({ success: true });
+  return submission.reply();
 }
