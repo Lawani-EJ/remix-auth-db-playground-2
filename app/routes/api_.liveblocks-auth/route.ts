@@ -1,13 +1,9 @@
-import { Liveblocks } from "@liveblocks/node";
 import { requireAuthCookie } from "~/auth";
 import { prisma } from "~/db/prisma";
 import { invariant } from "@epic-web/invariant";
 import type { ActionFunctionArgs } from "@vercel/remix";
 import { RoleSchema } from "~/schemas";
-
-const liveblocks = new Liveblocks({
-  secret: process.env.LIVEBLOCKS_SECRET!,
-});
+import { liveblocks } from "~/helpers/liveblocks";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const userId = await requireAuthCookie(request);
